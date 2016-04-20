@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9dd480cc-06f3-44eb-9086-a00b41abf1cf" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Game/res/HD/Hero.png" afterPath="$PROJECT_DIR$/Game/res/HD/Hero.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Game/index.html" afterPath="$PROJECT_DIR$/Game/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Game/src/GamingScene.js" afterPath="$PROJECT_DIR$/Game/src/GamingScene.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Game.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,8 +36,8 @@
       <file leaf-file-name="GamingScene.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Game/src/GamingScene.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="706">
-              <caret line="65" column="51" selection-start-line="65" selection-start-column="51" selection-end-line="65" selection-end-column="51" />
+            <state relative-caret-position="506">
+              <caret line="66" column="6" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
               <folding>
                 <element signature="e#2399#2537#0" expanded="false" />
               </folding>
@@ -283,15 +280,15 @@
       <updated>1460964427508</updated>
       <workItem from="1460964428705" duration="9074000" />
       <workItem from="1460976323628" duration="3391000" />
-      <workItem from="1461027499176" duration="1763000" />
+      <workItem from="1461027499176" duration="4747000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14228000" />
+    <option name="totallyTimeSpent" value="17212000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1098" extended-state="7" />
+    <frame x="-9" y="-9" width="1938" height="1098" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2836767" sideWeight="0.67849225" order="0" side_tool="false" content_ui="combo" />
@@ -425,8 +422,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Game/src/GamingScene.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="706">
-          <caret line="65" column="51" selection-start-line="65" selection-start-column="51" selection-end-line="65" selection-end-column="51" />
+        <state relative-caret-position="506">
+          <caret line="66" column="6" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
           <folding>
             <element signature="e#2399#2537#0" expanded="false" />
           </folding>
