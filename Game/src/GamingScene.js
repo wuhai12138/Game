@@ -18,6 +18,8 @@ var GamingLayer = cc.LayerColor.extend({
     _jumpLock:0,
     //敌人
     _enemy:null,
+    _target:null,
+    _allowAddTarget:true,
     //倒计时
     _downLabel:null,
 
@@ -104,22 +106,44 @@ var GamingLayer = cc.LayerColor.extend({
         this.addChild(this._hero,2);
         this.testIdle();
 
-        // //倒计时
-        // var to1 = cc.ProgressTo.create(30, this._winSize.height - 40);
-        // var left = cc.ProgressTimer.create(cc.Sprite.create(s_progressBar));
-        // left.setType(cc.PROGRESS_TIMER_TYPE_BAR);
-        // left.setBarChangeRate(cc.p(0, 1));
-        // left.setMidpoint(cc.p(0, this._winSize.height - 20));
-        // this.addChild(left,2);
-        // left.setPosition(20,200);
-        // left.runAction(cc.RepeatForever.create(to1));
+        //倒计时
+        var to1 = cc.ProgressFromTo.create(15, 100,0);
+        var left = cc.ProgressTimer.create(cc.Sprite.create(s_progressBar));
+        left.setType(cc.PROGRESS_TIMER_TYPE_BAR);
+        left.setBarChangeRate(cc.p(0, 1));
+        left.setMidpoint(cc.p(0, 0));
+        this.addChild(left,2);
+        left.setPosition(20,400);
+        left.runAction(to1);
+        //left.runAction(cc.RepeatForever.create(to1));
+        this.scheduleOnce(function () {
+            this._hero.setVisible(false);
+            for( i in this._enemy ){
+                //console.log("targetIterator");
+                var target = this._enemy[ i ];
+                target.setVisible(false);
+            };
+            this._allowAddTarget = false;
+
+            var restartItem = cc.MenuItemImage.create(
+                s_ButtonStartNormal,
+                s_ButtonStartSelected,
+                function () {
+                    var gamingScene = GamingScene.create();
+                    cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,gamingScene));
+                },this
+            )
+            var menu = cc.Menu.create(restartItem);
+            menu.setPosition(cc.p(this._winSize.width/2,this._winSize.height/2));
+            this.addChild(menu,2);
+        }, 15);
 
         return true;
     },
     //背景循环
-    loopBackGround:function(dt){
-    this._back01.update(0,-1510,0);
-    this._back02.update(0,0,1510);
+    loopBackGround: function (dt) {
+        this._back01.update(0, -1510, 0);
+        this._back02.update(0, 0, 1510);
     },
     
     //控制
@@ -131,14 +155,24 @@ var GamingLayer = cc.LayerColor.extend({
             this.testRun();
         }
 
-        if(this._hero.x<40)
-            this._hero.x=40;
-        if(this._hero.x>this._winSize.width - 40)
-            this._hero.x=this._winSize.width - 40;
-        if(this._hero.y<40)
-            this._hero.y=40;
-        if(this._hero.y>this._winSize.height - 40)
-            this._hero.y=this._winSize.height - 40;
+        if (this._hero.getPositionX() < 40) {
+            this._hero.setPositionX(40);
+            cc.log("aaa");
+        }
+
+        if (this._hero.getPositionX() > this._winSize.width - 40) {
+            this._hero.setPositionX(this._winSize.width - 40);
+            cc.log("aaa");
+        }
+
+        if (this._hero.getPositionY() < 40) {
+            this._hero.setPositionY(40);
+        }
+
+        if (this._hero.getPositionY() > this._winSize.height - 40) {
+            this._hero.setPositionY(this._winSize.height - 40);
+        }
+
     },
 
     onTouchesEnded:function(touches, event){
@@ -154,12 +188,14 @@ var GamingLayer = cc.LayerColor.extend({
         }
     },
     testIdle: function() {
-            switch (this.runState) {
+            switch (this._runState) {
                 case 1:
-                    //原本向右，则保持原本的动画不变
+                    //原本idle，则保持原本的动画不变
+                    this._hero.stopAllActions();
+                    this._hero.runAction(cc.RepeatForever.create(this._heroIdle));
                     break;
                 case 2:
-                    //原本向左，则停止向右的动作，变为向左
+                    //原本run,则停止动作改为idle
                     this._hero.stopAllActions();
                     this._hero.runAction(cc.RepeatForever.create(this._heroIdle));
                     //this.sprite.runAction(cc.animate(this.runRightAnimation).repeatForever());
@@ -169,93 +205,76 @@ var GamingLayer = cc.LayerColor.extend({
                     //this.sprite.runAction(cc.animate(this.runRightAnimation).repeatForever());
                     break;
             }
-            this.runState = 1;
+            this._runState = 1;
 
     },
     testRun: function(){
-            switch (this.runState) {
+            switch (this._runState) {
                 case 1:
-                    //原本向右，则停止向左的动作，变为向右
+                    //原本idle,则停止动作改为sun
                     this._hero.stopAllActions();
-                    this._hero.stopAction();
                     this._hero.runAction(cc.RepeatForever.create(this._heroRun));
                     //this._hero.runAction(cc.animate(this.runLeftAnimation).repeatForever());
                     break;
                 case 2:
-                    //原本向左，则保持原本的动画不变
+                    //原本run，则保持原本的动画不变
                     break;
                 default :
                     this._hero.runAction(cc.RepeatForever.create(this._heroRun));
                     //this._hero.runAction(cc.animate(this.runLeftAnimation).repeatForever());
                     break;
             }
-            this.runState = 2;
+            this._runState = 2;
 
     },
     testJump: function(){
         //检测jump是否加锁
-        if(!this.jumpLock){
-            this.jumpLock = 1;
+        if(!this._jumpLock){
+            this._jumpLock = 1;
             this._hero.stopAllActions();
-            switch (this.runState){
-                case 1:
-                    //改变动作
-                    this._hero.runAction(cc.RepeatForever.create(this._heroJump));
-                    // this._hero.runAction(cc.animate(this.jumpRightAnimation));
-                    setTimeout(function(){
-                        this._hero.runAction(cc.RepeatForever.create(this._heroJump));
-                        //this._hero.runAction(cc.animate(this.runRightAnimation).repeatForever());
-                        this.jumpLock = 0;
-                    }.bind(this),1000)
-                    break;
-                case 2:
-                    //改变动作
-                    this._hero.runAction(cc.RepeatForever.create(this._heroJump));
-                    //this._hero.runAction(cc.animate(this.jumpLeftAnimation));
-                    setTimeout(function(){
-                        this._hero.runAction(cc.RepeatForever.create(this._heroJump));
-                        //this._hero.runAction(cc.animate(this.runLeftAnimation).repeatForever());
-                        this.jumpLock = 0;
-                    }.bind(this),1000)
-                    break;
-                default :
-                    break;
-            }
+            this._hero.runAction(this._heroJump);
+            setTimeout(function(){
+                this._hero.runAction(cc.RepeatForever.create(this._heroJump));
+                this.testIdle();
+                this._jumpLock = 0;
+                cc.log("111111111");
+            }.bind(this),500)
         }
     },
 
-    addTarget:function(){
+    addTarget: function () {
+        if (this._allowAddTarget) {
+            var spriteFrameCache = cc.SpriteFrameCache.getInstance();
+            var frameCache = spriteFrameCache.addSpriteFrames(s_TestEnemyPlist, s_TestEnemyPng);
+            var str = "enemy" + Math.floor(Math.random() * 10 + 1) + ".png";
+            var frame = spriteFrameCache.getSpriteFrame(str);
+            this._target = cc.Sprite.createWithSpriteFrame(frame);
 
-        var spriteFrameCache = cc.SpriteFrameCache.getInstance();
-        var frameCache = spriteFrameCache.addSpriteFrames(s_TestEnemyPlist, s_TestEnemyPng);
-        var str = "enemy" + Math.floor(Math.random() * 10 + 1) + ".png";
-        var frame =spriteFrameCache.getSpriteFrame(str);
-        var target = cc.Sprite.createWithSpriteFrame(frame);
-
-        var winSize = cc.Director.getInstance().getWinSize();
+            var winSize = cc.Director.getInstance().getWinSize();
 
 
-        //设置敌人随机出现的X轴的值
-        var minX = target.getContentSize().width/2;
-        var maxX = winSize.width - target.getContentSize().width/2;
-        var rangeX = maxX - minX;
-        var actualX = Math.random() * rangeX + minX;
-        // 在一定范围内随机敌人的速度
-        var minDuration = 5;
-        var maxDuration = 8;
-        var rangeDuration = maxDuration - minDuration;
-        var actualDuration = Math.random() * rangeDuration + minDuration;
+            //设置敌人随机出现的X轴的值
+            var minX = this._target.getContentSize().width / 2;
+            var maxX = winSize.width - this._target.getContentSize().width / 2;
+            var rangeX = maxX - minX;
+            var actualX = Math.random() * rangeX + minX;
+            // 在一定范围内随机敌人的速度
+            var minDuration = 5;
+            var maxDuration = 8;
+            var rangeDuration = maxDuration - minDuration;
+            var actualDuration = Math.random() * rangeDuration + minDuration;
 
-        target.setScale(0.4,0.4);
-        target.setPosition(cc.p(actualX, winSize.height + target.getContentSize().height/2));
+            this._target.setScale(0.4, 0.4);
+            this._target.setPosition(cc.p(actualX, winSize.height + this._target.getContentSize().height / 2));
 
-        var actionMove = cc.MoveTo.create(actualDuration ,cc.p(actualX, 0 - target.getContentSize().height));
-        var actionMoveDone = cc.CallFunc.create(this.spriteMoveFinished,this);
+            var actionMove = cc.MoveTo.create(actualDuration, cc.p(actualX, 0 - this._target.getContentSize().height));
+            var actionMoveDone = cc.CallFunc.create(this.spriteMoveFinished, this);
 
-        target.runAction(cc.Sequence.create(actionMove,actionMoveDone));
+            this._target.runAction(cc.Sequence.create(actionMove, actionMoveDone));
 
-        this.addChild(target,1);
-        this._enemy.push(target);
+            this.addChild(this._target, 1);
+            this._enemy.push(this._target);
+        }
     },
     updateGame:function(){
         var targets2Delete = [];
@@ -275,6 +294,9 @@ var GamingLayer = cc.LayerColor.extend({
                 targets2Delete.push(target);
 
             }
+            // else {
+            //     this.testIdle();
+            // }
         }
         //删除发生碰撞的每个敌人
         for( i in targets2Delete){
