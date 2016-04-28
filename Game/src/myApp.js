@@ -31,6 +31,7 @@ var MyLayer = cc.Layer.extend({
     circle:null,
     sprite:null,
     start:null,
+    _music:null,
 
     init:function () {
 
@@ -65,6 +66,10 @@ var MyLayer = cc.Layer.extend({
             function () {
                 var gamingScene = GamingScene.create();// 创建结束场景
                 cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,gamingScene));  // 场景转换代码
+                if(cc.AudioEngine.getInstance().isMusicPlaying){
+                    cc.AudioEngine.getInstance().stopMusic(this._music);
+                    //cc.SimpleAudioEngine.preloadMusic()
+                }
             },this
         )
         //startItem.setAnchorPoint(0,0);
@@ -93,6 +98,7 @@ var MyLayer = cc.Layer.extend({
         this.sprite = cc.Sprite.create(s_BeginningBack);
         this.sprite.setPosition(size.width / 2, size.height / 2);
         this.addChild(this.sprite,0);
+
     }
 });
 
@@ -102,5 +108,8 @@ var MyScene = cc.Scene.extend({
         var layer = new MyLayer();
         this.addChild(layer);
         layer.init();
+        //this._music = cc.AudioEngine.getInstance().preloadMusic("res/HD/audioTest.mp3");
+        this._music = s_TestBeginAudio;
+        cc.AudioEngine.getInstance().playMusic(this._music, true);
     }
 });

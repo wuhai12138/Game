@@ -22,6 +22,8 @@ var GamingLayer = cc.LayerColor.extend({
     _allowAddTarget:true,
     //倒计时
     _downLabel:null,
+    //music
+    _music:null,
 
     init:function(){
         this._super();
@@ -131,12 +133,22 @@ var GamingLayer = cc.LayerColor.extend({
                 function () {
                     var gamingScene = GamingScene.create();
                     cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,gamingScene));
+                    if (cc.AudioEngine.getInstance().isMusicPlaying) {
+                        cc.AudioEngine.getInstance().stopMusic(this._music);
+                    }
                 },this
             )
             var menu = cc.Menu.create(restartItem);
             menu.setPosition(cc.p(this._winSize.width/2,this._winSize.height/2));
             this.addChild(menu,2);
         }, 15);
+
+        //music
+        // if(cc.AudioEngine.getInstance().isMusicPlaying){
+        //     cc.AudioEngine.getInstance().stopMusic(cc.._music);
+        //     console.log("aa");
+        //     //cc.SimpleAudioEngine.preloadMusic()
+        // }
 
         return true;
     },
@@ -291,6 +303,7 @@ var GamingLayer = cc.LayerColor.extend({
 
             if(cc.rectIntersectsRect(planeRect, targetRect)){
                 this.testJump();
+                cc.AudioEngine.getInstance().playEffect(s_TestHitAudio, false);
                 targets2Delete.push(target);
 
             }
@@ -340,6 +353,9 @@ var GamingScene = cc.Scene.extend({
         var layer = new GamingLayer();
         this.addChild(layer);
         layer.init();
+        //music
+        this._music = s_TestGameAudio;
+        cc.AudioEngine.getInstance().playMusic(this._music,true);
     }
 })
 //这个方法创建了GameOverScene场景，并调用这个场景的init方法进行初始化

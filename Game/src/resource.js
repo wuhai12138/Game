@@ -20,6 +20,10 @@ var s_TestCountdownPlist = "TestCountDown.plist";
 var s_TestCountdownPng = "TestCountDown.png";
 var s_progressBar = "ProgressBar.png";
 
+var s_TestBeginAudio = "res/HD/TestBeginAudio.mp3";
+var s_TestGameAudio = "res/HD/TestGameAudio.mp3";
+var s_TestHitAudio = "res/HD/hit.mp3";
+
 
 var g_resources = [
     //image
@@ -43,7 +47,7 @@ var g_resources = [
     s_TestEnemyPng,
     s_TestCountdownPlist,
     s_TestCountdownPng,
-    s_progressBar
+    s_progressBar,
 
 
 
@@ -54,6 +58,9 @@ var g_resources = [
     //tmx
 
     //bgm
+    s_TestBeginAudio,
+    s_TestGameAudio,
+    s_TestHitAudio,
 
     //effect
 ];
