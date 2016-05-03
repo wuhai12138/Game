@@ -42,7 +42,8 @@
             'src/MyLoader.js',
             'src/GamingScene.js',
             'src/GameOverScene.js',
-            'src/myApp.js'//add your own files in order here
+            'src/myApp.js',
+            'src/ajaxTest.js'//add your own files in order here
         ]
     };
 

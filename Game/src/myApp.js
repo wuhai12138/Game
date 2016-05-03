@@ -64,7 +64,7 @@ var MyLayer = cc.Layer.extend({
             s_ButtonStartNormal,
             s_ButtonStartSelected,
             function () {
-                var gamingScene = GamingScene.create();// 创建结束场景
+                var gamingScene = GamingScene.create();// 场景
                 cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,gamingScene));  // 场景转换代码
                 if(cc.AudioEngine.getInstance().isMusicPlaying){
                     cc.AudioEngine.getInstance().stopMusic(this._music);

@@ -119,28 +119,35 @@ var GamingLayer = cc.LayerColor.extend({
         left.runAction(to1);
         //left.runAction(cc.RepeatForever.create(to1));
         this.scheduleOnce(function () {
-            this._hero.setVisible(false);
-            for( i in this._enemy ){
-                //console.log("targetIterator");
-                var target = this._enemy[ i ];
-                target.setVisible(false);
-            };
-            this._allowAddTarget = false;
+            if (times > 1) {
+                this._hero.setVisible(false);
+                for (i in this._enemy) {
+                    //console.log("targetIterator");
+                    var target = this._enemy[i];
+                    target.setVisible(false);
+                }
+                ;
+                this._allowAddTarget = false;
 
-            var restartItem = cc.MenuItemImage.create(
-                s_ButtonStartNormal,
-                s_ButtonStartSelected,
-                function () {
-                    var gamingScene = GamingScene.create();
-                    cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,gamingScene));
-                    if (cc.AudioEngine.getInstance().isMusicPlaying) {
-                        cc.AudioEngine.getInstance().stopMusic(this._music);
-                    }
-                },this
-            )
-            var menu = cc.Menu.create(restartItem);
-            menu.setPosition(cc.p(this._winSize.width/2,this._winSize.height/2));
-            this.addChild(menu,2);
+                var restartItem = cc.MenuItemImage.create(
+                    s_ButtonStartNormal,
+                    s_ButtonStartSelected,
+                    function () {
+                        var gamingScene = GamingScene.create();
+                        cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, gamingScene));
+                        if (cc.AudioEngine.getInstance().isMusicPlaying) {
+                            cc.AudioEngine.getInstance().stopMusic(this._music);
+                        }
+                    }, this
+                )
+                var menu = cc.Menu.create(restartItem);
+                menu.setPosition(cc.p(this._winSize.width / 2, this._winSize.height / 2));
+                this.addChild(menu, 2);
+                times--;
+            }
+            else {
+                alert("time is out !");
+            }
         }, 15);
 
         //music
@@ -169,12 +176,10 @@ var GamingLayer = cc.LayerColor.extend({
 
         if (this._hero.getPositionX() < 40) {
             this._hero.setPositionX(40);
-            cc.log("aaa");
         }
 
         if (this._hero.getPositionX() > this._winSize.width - 40) {
             this._hero.setPositionX(this._winSize.width - 40);
-            cc.log("aaa");
         }
 
         if (this._hero.getPositionY() < 40) {
@@ -203,6 +208,7 @@ var GamingLayer = cc.LayerColor.extend({
             switch (this._runState) {
                 case 1:
                     //原本idle，则保持原本的动画不变
+
                     this._hero.stopAllActions();
                     this._hero.runAction(cc.RepeatForever.create(this._heroIdle));
                     break;

@@ -52,10 +52,10 @@ MyLoader = cc.Scene.extend({
         this.addChild(this._bgLayer, 0);
 
         //文字
-        // var mylabel = cc.LabelTTF.create("玩命加载中...", "微软雅黑", 20);
+        // var mylabel = cc.LabelTTF.create(score, "微软雅黑", 50);
         // mylabel.setColor(cc.c3(180, 180, 180));
-        // mylabel.setPosition(cc.p(this._winSize.width / 2, this._winSize.height *0.25));
-        // this.addChild(mylabel);
+        // mylabel.setPosition(cc.p(200,200));
+        // this.addChild(mylabel,2);
 
 
         //loading percent
