@@ -17,6 +17,7 @@ MyLoader = cc.Scene.extend({
     _winSize:null,
     _processLayer: null,
     _processLayerLength: null,
+    _percent:null,
 
 
     /**
@@ -142,15 +143,17 @@ MyLoader = cc.Scene.extend({
 
 
     _updatePercent: function () {
-        var percent = cc.Loader.getInstance().getPercentage();
-        var tmpStr = "Loading... " + percent + "%";
+        this._percent = cc.Loader.getInstance().getPercentage();
+        var tmpStr = "Loading... " + this._percent + "%";
         //this._label.setString(tmpStr);
 
 
-        this._processLayer.changeHeight(this._processLayerLength * percent / 100);
+        // this._processLayer.changeHeight(this._processLayerLength * this._percent / 100);
+        this._processLayer.changeHeight(this._percent);
 
 
-        if (percent >= 100)
+
+        if (this._percent >= 100)
             this.unschedule(this._updatePercent);
     },
 

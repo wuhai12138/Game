@@ -31,8 +31,8 @@ GameOverLayer.create = function(){
 
 var GameOverScene = cc.Scene.extend({
     _layer:null,
-    
-    init:function(){
+
+    onEnter:function(){
         // 这个场景加入了一个GameOverLayer层
         this._layer = GameOverLayer.create();
         this.addChild(this._layer);

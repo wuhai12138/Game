@@ -12,8 +12,6 @@ $.ajax({
     dataType: "json",
     success: function (json) {
         alert("数据：" + json.code);
-        score = 5;
-        times = 2;
     },
     error: function (message) {
 

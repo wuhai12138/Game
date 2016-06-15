@@ -75,7 +75,7 @@ var MyLayer = cc.Layer.extend({
         //startItem.setAnchorPoint(0,0);
 
         var menu = cc.Menu.create(startItem);
-        menu.setPosition(cc.p(size.width-35 , size.height-85));
+        menu.setPosition(cc.p(size.width*0.70 , size.height/2));
         this.addChild(menu,1);
 
 

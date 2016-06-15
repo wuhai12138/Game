@@ -21,12 +21,16 @@ var GamingLayer = cc.LayerColor.extend({
     _target:null,
     _allowAddTarget:true,
     //倒计时
-    _downLabel:null,
+    _duration:15,
+    _colorProgress:0,
+    _left:null,
     //music
     _music:null,
 
     init:function(){
         this._super();
+        var time = cc.director.calculateDeltaTime();
+        console.log(time);
         //装敌人
         this._enemy = [];
 
@@ -61,24 +65,24 @@ var GamingLayer = cc.LayerColor.extend({
         //动画帧
         var spriteFrameCache = cc.SpriteFrameCache.getInstance();
         //第一个参数plist文件，第二个参数plist对应的png图片
-        var frameCache = spriteFrameCache.addSpriteFrames(s_TestAnimationPlist, s_TestAnimationPng);
+        var frameCache = spriteFrameCache.addSpriteFrames(s_HeroPlist, s_HeroPng);
         //将所有帧存入一个数组
         var animFrames = [];
 
         //Idle
         //采用循环添加动画的每一帧
-        for (var i=1;i<=24;i++) {
-            var frame =spriteFrameCache.getSpriteFrame("4IDLE00" + i + ".png");
+        for (var i=1;i<=6;i++) {
+            var frame =spriteFrameCache.getSpriteFrame("HeroIdle" + i + ".png");
             if (frame) {
                 animFrames.push(frame);
             }
         }
         //创建动画，设置播放间隔
-        this._heroIdle = cc.Animate.create(cc.Animation.create(animFrames,0.1));
+        this._heroIdle = cc.Animate.create(cc.Animation.create(animFrames,0.4));
         //Run
         animFrames = [];
-        for(var i=1;i<=18;i++){
-            var frame =spriteFrameCache.getSpriteFrame("4RUN00" + i + ".png");
+        for(var i=1;i<=6;i++){
+            var frame =spriteFrameCache.getSpriteFrame("HeroIdle" + i + ".png");
             if (frame) {
                 animFrames.push(frame);
             }
@@ -86,8 +90,8 @@ var GamingLayer = cc.LayerColor.extend({
         this._heroRun = cc.Animate.create(cc.Animation.create(animFrames,0.1));
         //Jump
         animFrames = [];
-        for(var i=1;i<=9;i++){
-            var frame =spriteFrameCache.getSpriteFrame("4JUMP00" + i + ".png");
+        for(var i=1;i<=3;i++){
+            var frame =spriteFrameCache.getSpriteFrame("HeroAttack" + i + ".png");
             if (frame) {
                 animFrames.push(frame);
             }
@@ -102,23 +106,28 @@ var GamingLayer = cc.LayerColor.extend({
         //设置动画播放完成是否保持在第一帧，true为保持在第一帧，false为保持在最后一帧
         //animation.setRestoreOriginalFrame(false);
         // 单独显示一个动画
-        this._hero = cc.Sprite.createWithSpriteFrame(spriteFrameCache.getSpriteFrame("4IDLE001.png"));//plist里面对于的图片名称
+        this._hero = cc.Sprite.createWithSpriteFrame(spriteFrameCache.getSpriteFrame("HeroIdle1.png"));//plist里面对于的图片名称
         this._hero.setScale(0.8,0.8);
         this._hero.setPosition(cc.p(100,100));
         this.addChild(this._hero,2);
         this.testIdle();
 
         //倒计时
-        var to1 = cc.ProgressFromTo.create(15, 100,0);
-        var left = cc.ProgressTimer.create(cc.Sprite.create(s_progressBar));
-        left.setType(cc.PROGRESS_TIMER_TYPE_BAR);
-        left.setBarChangeRate(cc.p(0, 1));
-        left.setMidpoint(cc.p(0, 0));
-        this.addChild(left,2);
-        left.setPosition(20,400);
-        left.runAction(to1);
+        var to1 = cc.ProgressFromTo.create(this._duration, 100,0);
+        this._left = cc.ProgressTimer.create(cc.Sprite.create(s_progressBar));
+        this.schedule(this.onColorProgress);
+        this._left.setType(cc.PROGRESS_TIMER_TYPE_BAR);
+        this._left.setBarChangeRate(cc.p(0, 1));
+        this._left.setMidpoint(cc.p(0, 0));
+        this.addChild(this._left,2);
+        this._left.setPosition(20,400);
+        this._left.runAction(to1);
         //left.runAction(cc.RepeatForever.create(to1));
+
+
+
         this.scheduleOnce(function () {
+            var times = 3;
             if (times > 1) {
                 this._hero.setVisible(false);
                 for (i in this._enemy) {
@@ -135,6 +144,7 @@ var GamingLayer = cc.LayerColor.extend({
                     function () {
                         var gamingScene = GamingScene.create();
                         cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, gamingScene));
+                        console.log(times);
                         if (cc.AudioEngine.getInstance().isMusicPlaying) {
                             cc.AudioEngine.getInstance().stopMusic(this._music);
                         }
@@ -148,7 +158,7 @@ var GamingLayer = cc.LayerColor.extend({
             else {
                 alert("time is out !");
             }
-        }, 15);
+        }, this._duration);
 
         //music
         // if(cc.AudioEngine.getInstance().isMusicPlaying){
@@ -159,6 +169,21 @@ var GamingLayer = cc.LayerColor.extend({
 
         return true;
     },
+
+    //倒计时进度条颜色渐变
+    onColorProgress:function (dt) {
+        this._colorProgress += dt;
+        if(this._colorProgress<7.5){
+            this._left.setColor(cc.c4(34*this._colorProgress,255,0,255));
+        }
+        if(this._colorProgress>7.5&&this._colorProgress<15){
+            this._left.setColor(cc.c4(255,255-34*(this._colorProgress-7.5),0,255));
+        }
+        if (this._colorProgress > 15) {
+            this.unschedule(this.onColorProgress);
+        }
+    },
+
     //背景循环
     loopBackGround: function (dt) {
         this._back01.update(0, -1510, 0);
@@ -264,9 +289,10 @@ var GamingLayer = cc.LayerColor.extend({
         if (this._allowAddTarget) {
             var spriteFrameCache = cc.SpriteFrameCache.getInstance();
             var frameCache = spriteFrameCache.addSpriteFrames(s_TestEnemyPlist, s_TestEnemyPng);
-            var str = "enemy" + Math.floor(Math.random() * 10 + 1) + ".png";
+            // var str = "Enemy" + Math.floor(Math.random() * 10 + 1) + ".png";
+            var str = "Enemy1.png";
             var frame = spriteFrameCache.getSpriteFrame(str);
-            this._target = cc.Sprite.createWithSpriteFrame(frame);
+            this._target = cc.Sprite.createWithSpriteFrame(frame);  
 
             var winSize = cc.Director.getInstance().getWinSize();
 
@@ -277,8 +303,8 @@ var GamingLayer = cc.LayerColor.extend({
             var rangeX = maxX - minX;
             var actualX = Math.random() * rangeX + minX;
             // 在一定范围内随机敌人的速度
-            var minDuration = 5;
-            var maxDuration = 8;
+            var minDuration = 2;
+            var maxDuration = 5;
             var rangeDuration = maxDuration - minDuration;
             var actualDuration = Math.random() * rangeDuration + minDuration;
 
@@ -295,6 +321,7 @@ var GamingLayer = cc.LayerColor.extend({
         }
     },
     updateGame:function(){
+        // console.log(cc.director.calculateDeltaTime());
         var targets2Delete = [];
         //获取英雄的碰撞矩形
         var planeRect = this._hero.getBoundingBox();
@@ -337,7 +364,7 @@ var GamingLayer = cc.LayerColor.extend({
         var spriteFrameCache = cc.SpriteFrameCache.getInstance();
         var frameCache = spriteFrameCache.addSpriteFrames(s_TestCountdownPlist, s_TestCountdownPng);
         var i;
-        var str = "IDLE000" + i + ".png";
+        var str = "HeroIdle" + i + ".png";
         var frame =spriteFrameCache.getSpriteFrame(str);
         var target = cc.Sprite.createWithSpriteFrame(frame);
     }
